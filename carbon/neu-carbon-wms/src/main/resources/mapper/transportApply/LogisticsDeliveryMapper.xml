@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.LogisticsDeliveryMapper">
+
+    <resultMap type="LogisticsDelivery" id="LogisticsDeliveryResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="deliveryId"    column="delivery_id"    />
+        <result property="deliveryNo"    column="delivery_no"    />
+        <result property="deliveryUser"    column="delivery_user"    />
+        <result property="deliveryUserContact"    column="delivery_user_contact"    />
+        <result property="deliveryAdress"    column="delivery_adress"    />
+        <result property="receiveUser"    column="receive_user"    />
+        <result property="receiveUserContact"    column="receive_user_contact"    />
+        <result property="receiveAdress"    column="receive_adress"    />
+        <result property="wuliuRoute"    column="wuliu_route"    />
+        <result property="deliveryStatus"    column="delivery_status"    />
+        <result property="wuliuMap"    column="wuliu_map"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="remark"    column="remark"    />
+        <result property="remark1"    column="remark1"    />
+        <result property="remark2"    column="remark2"    />
+    </resultMap>
+
+    <sql id="selectLogisticsDeliveryVo">
+        SELECT
+            ld.id,
+            ld.order_no,
+            ld.delivery_id,
+            ld.delivery_user,
+            ld.delivery_user_contact,
+            ld.delivery_adress,
+            ld.receive_user,
+            ld.receive_user_contact,
+            ld.receive_adress,
+            ld.wuliu_route,
+            ld.delivery_status,
+            ld.wuliu_map,
+            ld.create_time,
+            ld.update_time,
+            ld.create_by,
+            ld.remark,
+            ld.remark1,
+            ld.remark2,
+            ssd.delivery_no
+        FROM
+            logistics_delivery ld
+                LEFT JOIN scm_sale_delivery ssd ON ld.delivery_id = ssd.id    </sql>
+
+    <select id="selectLogisticsDeliveryList" parameterType="LogisticsDelivery" resultMap="LogisticsDeliveryResult">
+        <include refid="selectLogisticsDeliveryVo"/>
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and ld.order_no like concat('%', #{orderNo}, '%')</if>
+            <if test="deliveryId != null "> and ld.delivery_id = #{deliveryId}</if>
+            <if test="deliveryNo != null and  deliveryNo!= ''"> and ssd.delivery_no like concat('%', #{deliveryNo}, '%')</if>
+            <if test="deliveryUser != null  and deliveryUser != ''"> and ld.delivery_user like concat('%', #{deliveryUser}, '%')</if>
+            <if test="deliveryUserContact != null  and deliveryUserContact != ''"> and ld.delivery_user_contact like concat('%', #{deliveryUserContact}, '%')</if>
+            <if test="deliveryAdress != null  and deliveryAdress != ''"> and ld.delivery_adress like concat('%', #{deliveryAdress}, '%')</if>
+            <if test="receiveUser != null  and receiveUser != ''"> and ld.receive_user like concat('%', #{receiveUser}, '%')</if>
+            <if test="receiveUserContact != null  and receiveUserContact != ''"> and ld.receive_user_contact like concat('%', #{receiveUserContact}, '%')</if>
+            <if test="receiveAdress != null  and receiveAdress != ''"> and ld.receive_adress like concat('%', #{receiveAdress}, '%')</if>
+            <if test="wuliuRoute != null  and wuliuRoute != ''"> and ld.wuliu_route like concat('%', #{wuliuRoute}, '%')</if>
+            <if test="deliveryStatus != null  and deliveryStatus != ''"> and ld.delivery_status = #{deliveryStatus}</if>
+            <if test="wuliuMap != null  and wuliuMap != ''"> and ld.wuliu_map = #{wuliuMap}</if>
+            <if test="remark1 != null  and remark1 != ''"> and ld.remark1 = #{remark1}</if>
+            <if test="remark2 != null  and remark2 != ''"> and ld.remark2 = #{remark2}</if>
+        </where>
+    </select>
+
+    <select id="selectLogisticsDeliveryById" parameterType="Long" resultMap="LogisticsDeliveryResult">
+        <include refid="selectLogisticsDeliveryVo"/>
+        where ld.id = #{id}
+    </select>
+
+    <insert id="insertLogisticsDelivery" parameterType="LogisticsDelivery" useGeneratedKeys="true" keyProperty="id">
+        insert into logistics_delivery
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">order_no,</if>
+            <if test="deliveryId != null">delivery_id,</if>
+            <if test="deliveryUser != null and deliveryUser != ''">delivery_user,</if>
+            <if test="deliveryUserContact != null and deliveryUserContact != ''">delivery_user_contact,</if>
+            <if test="deliveryAdress != null and deliveryAdress != ''">delivery_adress,</if>
+            <if test="receiveUser != null and receiveUser != ''">receive_user,</if>
+            <if test="receiveUserContact != null and receiveUserContact != ''">receive_user_contact,</if>
+            <if test="receiveAdress != null and receiveAdress != ''">receive_adress,</if>
+            <if test="wuliuRoute != null">wuliu_route,</if>
+            <if test="deliveryStatus != null">delivery_status,</if>
+            <if test="wuliuMap != null">wuliu_map,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="remark != null">remark,</if>
+            <if test="remark1 != null">remark1,</if>
+            <if test="remark2 != null">remark2,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">#{orderNo},</if>
+            <if test="deliveryId != null">#{deliveryId},</if>
+            <if test="deliveryUser != null and deliveryUser != ''">#{deliveryUser},</if>
+            <if test="deliveryUserContact != null and deliveryUserContact != ''">#{deliveryUserContact},</if>
+            <if test="deliveryAdress != null and deliveryAdress != ''">#{deliveryAdress},</if>
+            <if test="receiveUser != null and receiveUser != ''">#{receiveUser},</if>
+            <if test="receiveUserContact != null and receiveUserContact != ''">#{receiveUserContact},</if>
+            <if test="receiveAdress != null and receiveAdress != ''">#{receiveAdress},</if>
+            <if test="wuliuRoute != null">#{wuliuRoute},</if>
+            <if test="deliveryStatus != null">#{deliveryStatus},</if>
+            <if test="wuliuMap != null">#{wuliuMap},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="remark1 != null">#{remark1},</if>
+            <if test="remark2 != null">#{remark2},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLogisticsDelivery" parameterType="LogisticsDelivery">
+        update logistics_delivery
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">order_no = #{orderNo},</if>
+            <if test="deliveryId != null">delivery_id = #{deliveryId},</if>
+            <if test="deliveryUser != null and deliveryUser != ''">delivery_user = #{deliveryUser},</if>
+            <if test="deliveryUserContact != null and deliveryUserContact != ''">delivery_user_contact = #{deliveryUserContact},</if>
+            <if test="deliveryAdress != null and deliveryAdress != ''">delivery_adress = #{deliveryAdress},</if>
+            <if test="receiveUser != null and receiveUser != ''">receive_user = #{receiveUser},</if>
+            <if test="receiveUserContact != null and receiveUserContact != ''">receive_user_contact = #{receiveUserContact},</if>
+            <if test="receiveAdress != null and receiveAdress != ''">receive_adress = #{receiveAdress},</if>
+            <if test="wuliuRoute != null">wuliu_route = #{wuliuRoute},</if>
+            <if test="deliveryStatus != null">delivery_status = #{deliveryStatus},</if>
+            <if test="wuliuMap != null">wuliu_map = #{wuliuMap},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="remark1 != null">remark1 = #{remark1},</if>
+            <if test="remark2 != null">remark2 = #{remark2},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLogisticsDeliveryById" parameterType="Long">
+        delete from logistics_delivery where id = #{id}
+    </delete>
+
+    <delete id="deleteLogisticsDeliveryByIds" parameterType="String">
+        delete from logistics_delivery where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

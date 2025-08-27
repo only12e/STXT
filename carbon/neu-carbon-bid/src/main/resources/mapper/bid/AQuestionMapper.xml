@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.bid.mapper.AQuestionMapper">
+    
+    <resultMap type="AQuestion" id="AQuestionResult">
+        <result property="id"    column="id"    />
+        <result property="templateId"    column="template_id"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="score"    column="score"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap id="AQuestionAOptionsResult" type="AQuestion" extends="AQuestionResult">
+        <collection property="aOptionsList" notNullColumn="id" javaType="java.util.List" resultMap="AOptionsResult" />
+    </resultMap>
+
+    <resultMap type="AOptions" id="AOptionsResult">
+        <result property="id"    column="id"    />
+        <result property="questionId"    column="question_id"    />
+        <result property="content"    column="content"    />
+        <result property="isRight"    column="is_right"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectAQuestionVo">
+        select id, template_id, name, type, score, create_time, update_time, remark from a_question
+    </sql>
+
+    <select id="selectAQuestionList" parameterType="AQuestion" resultMap="AQuestionResult">
+        <include refid="selectAQuestionVo"/>
+        <where>  
+            <if test="templateId != null "> and template_id = #{templateId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="score != null "> and score = #{score}</if>
+        </where>
+    </select>
+    
+    <select id="selectAQuestionById" parameterType="Long" resultMap="AQuestionAOptionsResult">
+        select a.id, a.template_id, a.name, a.type, a.score, a.create_time, a.update_time, a.remark,
+            b.id, b.question_id, b.content, b.is_right, b.create_time, b.update_time, b.remark
+        from a_question a
+        left join a_options b on b.question_id = a.id
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertAQuestion" parameterType="AQuestion" useGeneratedKeys="true" keyProperty="id">
+        insert into a_question
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">template_id,</if>
+            <if test="name != null">name,</if>
+            <if test="type != null">type,</if>
+            <if test="score != null">score,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">#{templateId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="type != null">#{type},</if>
+            <if test="score != null">#{score},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAQuestion" parameterType="AQuestion">
+        update a_question
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="templateId != null">template_id = #{templateId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAQuestionById" parameterType="Long">
+        delete from a_question where id = #{id}
+    </delete>
+
+    <delete id="deleteAQuestionByIds" parameterType="String">
+        delete from a_question where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteAOptionsByQuestionIds" parameterType="String">
+        delete from a_options where question_id in 
+        <foreach item="questionId" collection="array" open="(" separator="," close=")">
+            #{questionId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteAOptionsByQuestionId" parameterType="Long">
+        delete from a_options where question_id = #{questionId}
+    </delete>
+
+    <insert id="batchAOptions">
+        insert into a_options(  question_id, content, is_right, create_time, update_time, remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (  #{item.questionId}, #{item.content}, #{item.isRight}, #{item.createTime}, #{item.updateTime}, #{item.remark})
+        </foreach>
+    </insert>
+</mapper>

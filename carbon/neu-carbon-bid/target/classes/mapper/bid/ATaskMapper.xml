@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.bid.mapper.ATaskMapper">
+    
+    <resultMap type="ATask" id="ATaskResult">
+        <result property="id"    column="id"    />
+        <result property="templateId"    column="template_id"    />
+        <result property="name"    column="name"    />
+        <result property="level"    column="level"    />
+        <result property="testDate"    column="test_date"    />
+        <result property="replyTime"    column="reply_time"    />
+        <result property="status"    column="status"    />
+        <result property="questionNum"    column="question_num"    />
+        <result property="publishTime"    column="publish_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectATaskVo">
+        SELECT
+        a_task.id,
+        a_task.template_id,
+        a_task.NAME,
+        a_task.test_date,
+        a_task.reply_time,
+        a_task.STATUS,
+        a_task.question_num,
+        a_task.publish_time,
+        a_task.create_time,
+            a_task.update_time,
+        a_task.remark,
+        t.`level`
+        FROM
+        a_task LEFT JOIN a_template  t  on t.id = a_task.template_id    </sql>
+
+    <select id="selectATaskList" parameterType="ATask" resultMap="ATaskResult">
+        <include refid="selectATaskVo"/>
+        <where>
+            <if test="templateId != null "> and a_task.template_id = #{templateId}</if>
+            <if test="level != null "> and t.level = #{level}</if>
+            <if test="name != null  and name != ''"> and a_task.name like concat('%', #{name}, '%')</if>
+            <if test="testDate != null  and testDate != ''"> and a_task.test_date = #{testDate}</if>
+            <if test="replyTime != null  and replyTime != ''"> and a_task.reply_time = #{replyTime}</if>
+            <if test="status != null  and status != ''"> and a_task.status = #{status}</if>
+            <if test="questionNum != null "> and a_task.question_num = #{questionNum}</if>
+            <if test="publishTime != null "> and a_task.publish_time = #{publishTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectATaskById" parameterType="Long" resultMap="ATaskResult">
+        <include refid="selectATaskVo"/>
+        where a_task.id = #{id}
+    </select>
+        
+    <insert id="insertATask" parameterType="ATask" useGeneratedKeys="true" keyProperty="id">
+        insert into a_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">template_id,</if>
+            <if test="name != null">name,</if>
+            <if test="testDate != null">test_date,</if>
+            <if test="replyTime != null">reply_time,</if>
+            <if test="status != null">status,</if>
+            <if test="questionNum != null">question_num,</if>
+            <if test="publishTime != null">publish_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">#{templateId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="testDate != null">#{testDate},</if>
+            <if test="replyTime != null">#{replyTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="questionNum != null">#{questionNum},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateATask" parameterType="ATask">
+        update a_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="templateId != null">template_id = #{templateId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="testDate != null">test_date = #{testDate},</if>
+            <if test="replyTime != null">reply_time = #{replyTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="questionNum != null">question_num = #{questionNum},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteATaskById" parameterType="Long">
+        delete from a_task where id = #{id}
+    </delete>
+
+    <delete id="deleteATaskByIds" parameterType="String">
+        delete from a_task where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

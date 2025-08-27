@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.bid.mapper.AOptionsMapper">
+    
+    <resultMap type="AOptions" id="AOptionsResult">
+        <result property="id"    column="id"    />
+        <result property="questionId"    column="question_id"    />
+        <result property="content"    column="content"    />
+        <result property="isRight"    column="is_right"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectAOptionsVo">
+        select id, question_id, content, is_right, create_time, update_time, remark from a_options
+    </sql>
+
+    <select id="selectAOptionsList" parameterType="AOptions" resultMap="AOptionsResult">
+        <include refid="selectAOptionsVo"/>
+        <where>  
+            <if test="questionId != null "> and question_id = #{questionId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="isRight != null  and isRight != ''"> and is_right = #{isRight}</if>
+        </where>
+    </select>
+    
+    <select id="selectAOptionsById" parameterType="Long" resultMap="AOptionsResult">
+        <include refid="selectAOptionsVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertAOptions" parameterType="AOptions" useGeneratedKeys="true" keyProperty="id">
+        insert into a_options
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionId != null">question_id,</if>
+            <if test="content != null">content,</if>
+            <if test="isRight != null">is_right,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionId != null">#{questionId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="isRight != null">#{isRight},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAOptions" parameterType="AOptions">
+        update a_options
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionId != null">question_id = #{questionId},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="isRight != null">is_right = #{isRight},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAOptionsById" parameterType="Long">
+        delete from a_options where id = #{id}
+    </delete>
+
+    <delete id="deleteAOptionsByIds" parameterType="String">
+        delete from a_options where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
